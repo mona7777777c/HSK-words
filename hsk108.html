@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汉语词汇闪卡</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            width: 200px;
+            height: 250px;
+            perspective: 1000px;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+
+        .card-front {
+            background: #ffffff;
+            font-size: 2.5em;
+            border: 1px solid #e0e0e0;
+            color: #2c3e50;
+        }
+
+        .card-back {
+            background: #fff;
+            transform: rotateY(180deg);
+            flex-direction: column;
+            border: 1px solid #4CAF50;
+            text-align: center;
+        }
+
+        .pinyin {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .pos {
+            color: #e74c3c;
+            font-style: italic;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .translation {
+            color: #27ae60;
+            font-size: 1.2em;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <template id="cardTemplate">
+            <div class="card">
+                <div class="card-inner">
+                    <div class="card-front"></div>
+                    <div class="card-back">
+                        <div class="pinyin"></div>
+                        <div class="pos"></div>
+                        <div class="translation"></div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <script>
+        const vocabulary = [
+            // 第一组
+            { hanzi: '想', pinyin: 'xiǎng', pos: 'v.', translation: 'to want, would like' },
+            { hanzi: '喝', pinyin: 'hē', pos: 'v.', translation: 'to drink' },
+            { hanzi: '茶', pinyin: 'chá', pos: 'n.', translation: 'tea' },
+            { hanzi: '吃', pinyin: 'chī', pos: 'v.', translation: 'to eat' },
+            { hanzi: '米饭', pinyin: 'mǐfàn', pos: 'n.', translation: 'cooked rice' },
+            
+            // 第二组
+            { hanzi: '下午', pinyin: 'xiàwǔ', pos: 'n.', translation: 'afternoon' },  // 修正拼音
+            { hanzi: '商店', pinyin: 'shāngdiàn', pos: 'n.', translation: 'shop, store' },
+            { hanzi: '买', pinyin: 'mǎi', pos: 'v.', translation: 'to buy' },        // 修正拼音
+            { hanzi: '个', pinyin: 'gè', pos: 'm.', translation: 'general measure word' },
+            { hanzi: '杯子', pinyin: 'bēizi', pos: 'n.', translation: 'cup, glass' },
+            
+            // 第三组
+            { hanzi: '这', pinyin: 'zhè', pos: 'pron.', translation: 'this' },
+            { hanzi: '多少', pinyin: 'duōshǎo', pos: 'pron.', translation: 'how many/much' }, // 修正拼音
+            { hanzi: '钱', pinyin: 'qián', pos: 'n.', translation: 'money' },
+            { hanzi: '块', pinyin: 'kuài', pos: 'm.', translation: 'yuan (currency unit)' },
+            { hanzi: '那', pinyin: 'nà', pos: 'pron.', translation: 'that' }
+        ];
+
+        const container = document.querySelector('.container');
+        const template = document.getElementById('cardTemplate');
+
+        vocabulary.forEach(word => {
+            const clone = template.content.cloneNode(true);
+            const card = clone.querySelector('.card');
+            const front = clone.querySelector('.card-front');
+            const pinyin = clone.querySelector('.pinyin');
+            const pos = clone.querySelector('.pos');
+            const translation = clone.querySelector('.translation');
+
+            front.textContent = word.hanzi;
+            pinyin.textContent = word.pinyin;
+            pos.textContent = word.pos;
+            translation.textContent = word.translation;
+
+            card.addEventListener('click', () => {
+                card.classList.toggle('flipped');
+            });
+
+            container.appendChild(clone);
+        });
+    </script>
+</body>
+</html>

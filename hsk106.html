@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汉语词汇闪卡（带发音）</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            width: 200px;
+            height: 250px;
+            perspective: 1000px;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+
+        .card-front {
+            background: #ffffff;
+            font-size: 2.5em;
+            border: 1px solid #e0e0e0;
+            color: #2c3e50;
+        }
+
+        .card-back {
+            background: #fff;
+            transform: rotateY(180deg);
+            flex-direction: column;
+            border: 1px solid #4CAF50;
+            text-align: center;
+        }
+
+        .pinyin {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .pos {
+            color: #e74c3c;
+            font-style: italic;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .translation {
+            color: #27ae60;
+            font-size: 1.2em;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <template id="cardTemplate">
+            <div class="card">
+                <div class="card-inner">
+                    <div class="card-front"></div>
+                    <div class="card-back">
+                        <div class="pinyin"></div>
+                        <div class="pos"></div>
+                        <div class="translation"></div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <script>
+        const vocabulary = [
+            { hanzi: '会', pinyin: 'huì', pos: 'mod.', translation: 'can, to be able to' },
+            { hanzi: '说', pinyin: 'shuō', pos: 'v.', translation: 'to speak, to say' },
+            { hanzi: '妈妈', pinyin: 'māma', pos: 'n.', translation: 'mother' },
+            { hanzi: '菜', pinyin: 'cài', pos: 'n.', translation: 'dish, cuisine' },
+            { hanzi: '很', pinyin: 'hěn', pos: 'adv.', translation: 'very, quite' },
+            { hanzi: '好吃', pinyin: 'hǎochī', pos: 'adj.', translation: 'delicious, tasty' },
+            { hanzi: '做', pinyin: 'zuò', pos: 'v.', translation: 'to make, to produce' },
+            { hanzi: '写', pinyin: 'xiě', pos: 'v.', translation: 'to write' },
+            { hanzi: '汉字', pinyin: 'Hànzì', pos: 'n.', translation: 'Chinese character' },
+            { hanzi: '字', pinyin: 'zì', pos: 'n.', translation: 'character, word' },
+            { hanzi: '怎么', pinyin: 'zěnme', pos: 'pron.', translation: 'how' },
+            { hanzi: '读', pinyin: 'dú', pos: 'v.', translation: 'to read' }
+        ];
+
+        const container = document.querySelector('.container');
+        const template = document.getElementById('cardTemplate');
+        const synth = window.speechSynthesis;
+
+        function speakPinyin(pinyin) {
+            const utterance = new SpeechSynthesisUtterance(pinyin.replace(/\d/g, ''));
+            utterance.lang = 'zh-CN';
+            utterance.rate = 0.8;
+            synth.speak(utterance);
+        }
+
+        vocabulary.forEach(word => {
+            const clone = template.content.cloneNode(true);
+            const card = clone.querySelector('.card');
+            const front = clone.querySelector('.card-front');
+            const pinyinElement = clone.querySelector('.pinyin');
+            const pos = clone.querySelector('.pos');
+            const translation = clone.querySelector('.translation');
+
+            front.textContent = word.hanzi;
+            pinyinElement.textContent = word.pinyin;
+            pos.textContent = word.pos;
+            translation.textContent = word.translation;
+
+            // 点击正面翻转卡片
+            front.addEventListener('click', () => {
+                card.classList.add('flipped');
+            });
+
+            // 点击拼音播放发音
+            pinyinElement.addEventListener('click', (e) => {
+                e.stopPropagation();
+                speakPinyin(word.pinyin);
+            });
+
+            // 点击背面其他区域返回
+            clone.querySelector('.card-back').addEventListener('click', (e) => {
+                if(e.target === pinyinElement) return;
+                card.classList.remove('flipped');
+            });
+
+            container.appendChild(clone);
+        });
+    </script>
+</body>
+</html>
